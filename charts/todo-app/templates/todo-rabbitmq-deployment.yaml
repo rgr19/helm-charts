@@ -4,12 +4,13 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-rabbitmq
   labels:
+    app: todo-app
     todo-app-deployment: todo-rabbitmq
 spec:
   replicas: {{ .Values.BACKEND.STATELESS.RABBITMQ.REPLICAS }}
   selector:
-      matchLabels:
-        todo-app-pod: todo-rabbitmq
+    matchLabels:
+      todo-app-pod: todo-rabbitmq
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -28,29 +29,31 @@ spec:
           envFrom:
             - configMapRef:
                 name: todo-config
+            - secretRef:
+                name: todo-secret
           env:
-          - name: RABBITMQ_DEFAULT_PASS
-            valueFrom:
-              secretKeyRef:
-                name: todo-secret
-                key: RABBITMQ_DEFAULT_PASS
-          - name: RABBITMQ_DEFAULT_USER
-            valueFrom:
-              secretKeyRef:
-                name: todo-secret
-                key: RABBITMQ_DEFAULT_USER
-          - name: RABBITMQ_DEFAULT_URL
-            valueFrom:
-              secretKeyRef:
-                name: todo-secret
-                key: RABBITMQ_DEFAULT_URL
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secret
+                  key: RABBITMQ_DEFAULT_PASS
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secret
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secret
+                  key: RABBITMQ_DEFAULT_URL
           ports:
-          - name: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.NAME.HTTP }}
-            protocol: TCP
-            containerPort: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.TARGET.HTTP }}
-          - name: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.NAME.AMQP }}
-            protocol: TCP
-            containerPort: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.TARGET.AMQP }}
+            - name: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.NAME.HTTP }}
+              protocol: TCP
+              containerPort: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.TARGET.HTTP }}
+            - name: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.NAME.AMQP }}
+              protocol: TCP
+              containerPort: {{ .Values.BACKEND.STATELESS.RABBITMQ.PORT.TARGET.AMQP }}
           resources:
             limits:
               memory: {{ .Values.BACKEND.STATELESS.RABBITMQ.MEMORY }}

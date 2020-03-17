@@ -4,6 +4,7 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-postgres
   labels:
+    app: todo-app
     todo-app-deployment: todo-postgres
 spec:
   replicas: {{ .Values.BACKEND.STATEFUL.POSTGRES.REPLICAS }}
@@ -32,6 +33,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: todo-config
+            - secretRef:
+                name: todo-secret
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:

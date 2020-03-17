@@ -4,12 +4,13 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-cache-ingestion
   labels:
+    app: todo-app
     todo-app-deployment: todo-cache-ingestion
 spec:
   replicas: {{ .Values.BACKEND.STATELESS.CACHE.INGESTION.REPLICAS }}
   selector:
-      matchLabels:
-        todo-app-pod: todo-cache-ingestion
+    matchLabels:
+      todo-app-pod: todo-cache-ingestion
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -22,16 +23,18 @@ spec:
     spec:
       restartPolicy: Always
       initContainers:
-      - name: init-rabbitmq
-        image: busybox
-        command: ['sh', '-c', 'until nslookup todo-rabbitmq; do echo waiting for RabbitMQ; sleep 2; done;']
+        - name: init-rabbitmq
+          image: busybox
+          command: ['sh', '-c', 'until nslookup todo-rabbitmq; do echo waiting for RabbitMQ; sleep 2; done;']
       containers:
-      - name: todo-cache-ingestion
-        image: {{ .Values.VARS.DOCKER.HUB.ID }}/todo-cache-ingestion:{{ .Values.BACKEND.STATELESS.CACHE.INGESTION.IMAGE.TAG }}
-        imagePullPolicy: {{ .Values.BACKEND.STATELESS.CACHE.INGESTION.IMAGE.PULLPOLICY }}
-        envFrom:
-          - configMapRef:
-              name: todo-config
-        resources:
-          limits:
-            memory: {{ .Values.BACKEND.STATELESS.CACHE.INGESTION.MEMORY }}
+        - name: todo-cache-ingestion
+          image: {{ .Values.VARS.DOCKER.HUB.ID }}/todo-cache-ingestion:{{ .Values.BACKEND.STATELESS.CACHE.INGESTION.IMAGE.TAG }}
+          imagePullPolicy: {{ .Values.BACKEND.STATELESS.CACHE.INGESTION.IMAGE.PULLPOLICY }}
+          envFrom:
+            - configMapRef:
+                name: todo-config
+            - secretRef:
+                name: todo-secret
+          resources:
+            limits:
+              memory: "{{ .Values.BACKEND.STATELESS.CACHE.INGESTION.MEMORY }}"

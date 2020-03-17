@@ -4,6 +4,7 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-postgres
   labels:
+    app: todo-app
     todo-app-service: todo-postgres
 spec:
   type: ClusterIP

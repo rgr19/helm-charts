@@ -5,6 +5,8 @@ metadata:
   name: todo-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+  labels:
+    app: todo-app
 spec:
   rules:
     - http:

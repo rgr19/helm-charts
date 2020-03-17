@@ -4,12 +4,13 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-cache-service
   labels:
+    app: todo-app
     todo-app-deployment: todo-cache-service
 spec:
   replicas: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.REPLICAS }}
   selector:
-      matchLabels:
-        todo-app-pod: todo-cache-service
+    matchLabels:
+      todo-app-pod: todo-cache-service
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -22,14 +23,16 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - name: todo-cache-service
-        image: {{ .Values.VARS.DOCKER.HUB.ID }}/todo-cache-service:{{ .Values.BACKEND.STATELESS.CACHE.SERVICE.IMAGE.TAG }}
-        imagePullPolicy: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.IMAGE.PULLPOLICY }}
-        envFrom:
-          - configMapRef:
-              name: todo-config
-        ports:
-        - containerPort: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.PORT.TARGET }}
-        resources:
-          limits:
-            memory: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.MEMORY }}
+        - name: todo-cache-service
+          image: {{ .Values.VARS.DOCKER.HUB.ID }}/todo-cache-service:{{ .Values.BACKEND.STATELESS.CACHE.SERVICE.IMAGE.TAG }}
+          imagePullPolicy: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.IMAGE.PULLPOLICY }}
+          envFrom:
+            - configMapRef:
+                name: todo-config
+            - secretRef:
+                name: todo-secret
+          ports:
+            - containerPort: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.PORT.TARGET }}
+          resources:
+            limits:
+              memory: {{ .Values.BACKEND.STATELESS.CACHE.SERVICE.MEMORY }}

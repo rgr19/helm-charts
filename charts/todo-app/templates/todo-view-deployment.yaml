@@ -4,6 +4,7 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-view
   labels:
+    app: todo-app
     todo-app-deployment: todo-view
 spec:
   replicas: {{ .Values.FRONTEND.VIEW.REPLICAS }}
@@ -28,6 +29,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: todo-config
+            - secretRef:
+                name: todo-secret
+
           ports:
             - containerPort: {{ .Values.FRONTEND.VIEW.PORT.TARGET.DEV }}
             - containerPort: {{ .Values.FRONTEND.VIEW.PORT.TARGET.HTTP }}

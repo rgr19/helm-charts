@@ -4,6 +4,7 @@ metadata:
   namespace: {{ template "todo-app.namespace" . }}
   name: todo-storage-service
   labels:
+    app: todo-app
     todo-app-service: todo-storage-service
 spec:
   type: ClusterIP
